@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 export default function PlayButton({ onPress, isPlaying }) {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Icon name={isPlaying ? "play" : "pause"} size={40} color="#fff" />
+      <Icon name={isPlaying ? "pause" : "play"} size={40} color="#fff" />
     </TouchableOpacity>
   );
 }
