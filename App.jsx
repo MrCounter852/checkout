@@ -29,7 +29,7 @@ export default function App() {
             // Devolver el icono
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: "#ff6347", // Color activo
+          tabBarActiveTintColor: "#fd6f01", // Color activo
           tabBarInactiveTintColor: "gray", // Color inactivo
           tabBarLabelStyle: { fontSize: 12 }, // Estilo de la etiqueta
           tabBarStyle: { backgroundColor: "#1E1E1E" },
