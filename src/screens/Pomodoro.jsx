@@ -1,45 +1,88 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PlayButton from "../common/PlayButton"; // Asegúrate de que la ruta sea correcta
-import NextButton  from "../common/NextButton";
+import NextButton from "../common/NextButton";
 import PrevButton from "../common/PrevButton";
+
 export default function PomodoroScreen() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [sesion, setSesion] = useState(1);
-  const [seconds, setSeconds] = useState(60); // 25 minutos en segundos
+  const [session, setSession] = useState(1); // Sesión de trabajo, empieza en 1
+  const [seconds, setSeconds] = useState(1500); // 25 minutos en segundos (para trabajo)
+  const [isWorking, setIsWorking] = useState(true); // Si es tiempo de trabajo o descanso
 
-  function toggleTimer() {
+  // Alterna entre trabajo y descanso
+  const toggleTimer = () => {
     setIsPlaying(!isPlaying);
-  }
+  };
+
+  // Configura el tiempo de la siguiente sesión
+  const nextSession = () => {
+    if (session < 4) {
+      setSession(session + 1);
+      setIsWorking(true);
+      setSeconds(1500); // 25 minutos de trabajo
+    }else {
+      setSession(1);
+      setIsWorking(true);
+      setSeconds(1500)
+    }
+  };
+
+  const prevSession = () => {
+    if (session > 1) {
+      setSession(session - 1);
+      setIsWorking(true);
+      setSeconds(1500); // 25 minutos de trabajo
+    }
+  };
 
   useEffect(() => {
     let timer;
+
+    // Cambiar el tiempo de descanso después de las sesiones de trabajo
     if (isPlaying && seconds > 0) {
       timer = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
     } else if (seconds === 0) {
+      if (isWorking) {
+        // Si es tiempo de trabajo, cambiar a descanso
+        setIsWorking(false);
+        // Establecer el tiempo de descanso según la sesión
+        if (session < 4) {
+          setSeconds(300); // 5 minutos de descanso
+        } else {
+          setSeconds(900); // 15 minutos de descanso en la cuarta sesión
+        }
+      } else {
+        // Si es tiempo de descanso, cambiar a la siguiente sesión de trabajo
+        nextSession();
+      }
       setIsPlaying(false); // Detener el temporizador cuando llega a cero
-      setSeconds(1500); // Reiniciar a 25 minutos para la siguiente sesión
     }
 
     return () => clearInterval(timer); // Limpiar el intervalo cuando cambia isPlaying o se desmonta el componente
-  }, [isPlaying, seconds]);
+  }, [isPlaying, seconds, isWorking, session]);
 
+  // Función para formatear el tiempo en minutos:segundos
   const formatTime = () => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.sesionNumber}>#1</Text>
+      <Text style={styles.sesionNumber}>Session #{session}</Text>
       <View style={styles.buttonRow}>
-      <PrevButton/>
-      <PlayButton onPress={toggleTimer} isPlaying={isPlaying} />
-      <NextButton/>
+        <PrevButton onPress={prevSession} />
+        <PlayButton onPress={toggleTimer} isPlaying={isPlaying} />
+        <NextButton onPress={nextSession} />
       </View>
       <Text style={styles.timerText}>{formatTime()}</Text>
+      <Text style={styles.sessionType}>
+        {isWorking ? "On Work." : "Rest."}
+      </Text>
     </View>
   );
 }
@@ -57,22 +100,24 @@ const styles = StyleSheet.create({
     color: "white",
     marginTop: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 20,
-    color: "white",
-  },
-  sesionNumber:{
-    fontSize:18,
-    color:"gray",
-    marginBottom:20,
+  sesionNumber: {
+    fontSize: 18,
+    color: "gray",
+    marginBottom: 20,
   },
   buttonRow: {
     flexDirection: "row", // Coloca los botones en una fila horizontal
     justifyContent: "space-around", // Espacio entre los botones
     alignItems: "center", // Centra verticalmente
     width: "60%", // Ajusta el ancho del contenedor para organizar mejor los botones
+    marginTop: 20,
+  },
+  sessionType: {
+    fontStyle:"italic",
+    fontSize: 18,
+    color: "gray",
+    textAlign:"center",
+    width:600,
     marginTop: 20,
   },
 });
