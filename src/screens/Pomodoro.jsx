@@ -17,10 +17,16 @@ export default function PomodoroScreen() {
 
   // Configura el tiempo de la siguiente sesión
   const nextSession = () => {
-    if (session < 4) {
-      setSession(session + 1);
-      setIsWorking(true);
-      setSeconds(1500); // 25 minutos de trabajo
+    if (session < 4 && isWorking == true) {
+      setIsWorking(false);
+      setSeconds(300); // 25 minutos de trabajo
+    }else if (session < 4 && isWorking == false) {
+        setSession(session + 1);
+        setIsWorking(true);
+        setSeconds(1500); // 25 minutos de trabajo
+    }else if (session == 4 && isWorking == true){
+      setIsWorking(false);
+      setSeconds(900)
     }else {
       setSession(1);
       setIsWorking(true);
@@ -81,7 +87,7 @@ export default function PomodoroScreen() {
       </View>
       <Text style={styles.timerText}>{formatTime()}</Text>
       <Text style={styles.sessionType}>
-        {isWorking ? "On Work." : "Rest."}
+        {isWorking ? "The moment one gives close attention to anything, even a blade of grass, it becomes a mysterious, awesome, indescribably magnificent world in itself." : "Rest."}
       </Text>
     </View>
   );
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", // Coloca los botones en una fila horizontal
     justifyContent: "space-around", // Espacio entre los botones
     alignItems: "center", // Centra verticalmente
-    width: "60%", // Ajusta el ancho del contenedor para organizar mejor los botones
+    width: "95%", // Ajusta el ancho del contenedor para organizar mejor los botones
     marginTop: 20,
   },
   sessionType: {
@@ -117,7 +123,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "gray",
     textAlign:"center",
-    width:600,
-    marginTop: 20,
+    width:"80%",
+    position:"absolute",
+    bottom:20,
   },
 });
